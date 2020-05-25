@@ -1,0 +1,31 @@
+<script src="../node_modules/vue/dist/vue.js"></script>
+
+<div id="app">
+  <example :ok="ok"></example>
+  <button @click="ok = !ok">toggle</button>
+</div>
+
+<script>
+const Foo = Vue.component('Foo', {
+  render: h => h('div', { attrs: { class: 'foo' } }, 'foo')
+})
+
+const Bar = Vue.component('Bar', {
+  render: h => h('div', { attrs: { class: 'bar' } },'bar')
+})
+
+Vue.component('example', {
+  props: [ 'ok' ],
+  render (h) {
+    return h('div', { attrs: { class: 'example' } }, h(this.ok ? Foo : Bar)) // 一定要使用 h 去造 VNode
+    // return h(this.ok ? Foo : Bar)
+  }
+})
+
+new Vue({
+  el: '#app',
+  data: {
+    ok: true
+  }
+})
+</script>

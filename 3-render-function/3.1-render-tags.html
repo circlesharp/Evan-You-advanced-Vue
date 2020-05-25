@@ -1,0 +1,18 @@
+<script src="../node_modules/vue/dist/vue.js"></script>
+
+<div id="app">
+  <example :tags="['h1', 'h2', 'h3']"></example>
+</div>
+
+<script>
+Vue.component('example', {
+  props: ['tags'],
+  render (h) {
+    let children = this.tags.map((tag, i) => h(tag, { attrs: { class: i } }, i))
+    console.log(children)
+    return h('div', { attrs: { class: 'wrapper' } }, children)
+  }
+})
+
+new Vue({ el: '#app' })
+</script>
