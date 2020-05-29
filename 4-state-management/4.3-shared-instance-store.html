@@ -10,30 +10,32 @@
 <script>
 // copy and modify the first exercise to use a Vue instance as
 // a shared store instead.
+
+/**
+ * 1. state 就是 store
+ * 2. methods 中的直接修改 data 的就是 mutation
+ * 3. mutation 必须是同步的，因为 devtools 有时间旅行者提供 snapshot
+ */
+
 const state = new Vue({
-  data: {
-    count: 0
-  },
+  data: { cnt: 0 },
   methods: {
-    inc () {
-      this.count++
+    increase () {
+      this.cnt++
     }
   }
 })
 
 const Counter = {
-  render: h => h('div', state.count)
+  // 这里就触发了 state.cnt 的 getter, 注册了依赖，渲染是响应的
+  render: h => h('div', state.cnt)
 }
 
 new Vue({
   el: '#app',
-  components: {
-    Counter
-  },
+  components: { Counter },
   methods: {
-    inc () {
-      state.inc()
-    }
+    inc () { state.increase() }
   }
 })
 </script>

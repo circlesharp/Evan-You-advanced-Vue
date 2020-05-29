@@ -18,10 +18,8 @@ new Vue({
   },
   components: {
     Counter: {
-      props: {
-        count: Number
-      },
-      template: `<div>{{ count }}</div>`
+      template: `<div>{{count}}</div>`,
+      props: ['count']
     }
   }
 })
