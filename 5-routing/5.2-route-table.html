@@ -1,38 +1,36 @@
 <script src="../node_modules/vue/dist/vue.js"></script>
 
 <div id="app">
-  <component :is="matchedComponent"></component>
-  <a href="#foo">foo</a>
-  <a href="#bar">bar</a>
+  <component :is="testComp"></component>
 </div>
 
 <script>
-// '#/foo' -> Foo
-// '#/bar' -> Bar
-// '#/404' -> NotFound
+  const Foo = { template: `<div>foo</div>` }
+  const Bar = { template: `<div>bar</div>` }
+  const NotFound = { template: `<div>not found!</div>` }
 
-const Foo = { template: `<div>foo</div>` }
-const Bar = { template: `<div>bar</div>` }
-const NotFound = { template: `<div>not found!</div>` }
-
-const routeTable = {
-  foo: Foo,
-  bar: Bar
-}
-
-window.addEventListener('hashchange', () => {
-  app.url = window.location.hash.slice(1)
-})
-
-const app = new Vue({
-  el: '#app',
-  data: {
-    url: 'foo'
-  },
-  computed: {
-    matchedComponent () {
-      return routeTable[this.url] || NotFound
-    }
+  const routeTable = {
+    foo: Foo,
+    bar: Bar
   }
-})
+
+  window.addEventListener('hashchange', () => {
+    app.url = window.location.hash.slice(1)
+  })
+
+  const app = new Vue({
+    el: '#app',
+    data: {
+      url: ''
+    },
+    render (h) {
+      return h('div', [
+        // 如果 h 里面有 h, 要写在数组里面
+        h('div', [ h(routeTable[this.url] || NotFound) ]),
+        h('a', { attrs: { href: '#foo' } }, 'foo'),
+        ' | ',
+        h('a', { attrs: { href: '#bar' } }, 'bar')
+      ])
+    }
+  })
 </script>

@@ -20,21 +20,41 @@
 </div>
 
 <script>
+  window.addEventListener('hashchange', function () {
+    vm.url = window.location.hash.slice(1)
+  })
+
+  const vm = new Vue({
+    el: '#app',
+    data: { url: 'default' },
+    components: {
+      foo: { render: h => h('div', 'foo') },
+      bar: { render: h => h('div', 'bar') },
+      default: { render: h => h('div', 'default') }
+    }
+  })
+</script>
+
+<script type="text">
 window.addEventListener('hashchange', () => {
+  console.log('hashchange', app.url, window.location.hash.slice(1))
   app.url = window.location.hash.slice(1)
 })
 
 const app = new Vue({
   el: '#app',
   data: {
-    url: 'foo'
+    url: 'default'
   },
   components: {
-    foo: { template: `<div>foo</div>`},
-    bar: { template: `<div>bar</div>`},
+    foo: { template: `<div>foo</div>` },
+    bar: { template: `<div>bar</div>` },
+    default: { render: h => h('div', 'default') }
   },
   methods: {
+    // 甚至说，这个根本不需要，href 已经做好了
     routeTo (route) {
+      // 对 window.location.hash 赋值，不用在意该值是否带 #
       window.location.hash = route
     }
   }
