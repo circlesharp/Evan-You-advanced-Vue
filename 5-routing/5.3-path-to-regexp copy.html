@@ -1,0 +1,79 @@
+<script src="../node_modules/vue/dist/vue.js"></script>
+<script src="./path-to-regexp.js"></script>
+
+<div id="app"></div>
+
+<script>
+
+// 组件
+const Foo = {
+  props: ['id'],
+  template: `<div>foo with id: {{ id }}</div>`
+}
+const Bar = { template: `<div>bar</div>` }
+const NotFound = { template: `<div>not found!</div>` }
+
+// 路由表
+const routeTable = {
+  '/foo/:id': Foo,
+  '/bar': Bar
+}
+
+// 编译路由组
+// 对注册在路由表的项进行处理
+// [{ component, regex, dynamicSegments }]
+const compiledRoutes = []
+Object.keys(routeTable).forEach(key => {
+  const dynamicSegments = []
+  const regex = pathToRegexp(key, dynamicSegments)
+  const component = routeTable[key]
+  compiledRoutes.push({
+    component,
+    regex,
+    dynamicSegments
+  })
+})
+
+// 监听 hashchange
+window.addEventListener('hashchange', () => {
+  app.url = window.location.hash.slice(1)
+})
+
+const app = new Vue({
+  el: '#app',
+  data: {
+    url: window.location.hash.slice(1)
+  },
+  render (h) {
+    const path = '/' + this.url
+
+    let componentToRender
+    let props = {}
+
+    // The some method tests whether at least one element in the array passes the test implemented by the provided function. It returns a Boolean value.
+    // 这里相当于短路操作，太秀了
+    compiledRoutes.some(route => {
+      const match = route.regex.exec(path) // match -> ['paramValue']
+      componentToRender = NotFound
+      if (match) {
+        componentToRender = route.component
+        route.dynamicSegments.forEach((segment, index) => {
+          props[segment.name] = match[index + 1] // props -> { param: paramValue }
+        })
+        return true
+      }
+    })
+
+    return h('div', [
+      h(componentToRender, { props }),
+      h('a', { attrs: { href: '#foo/123' }}, 'foo 123'),
+      ' | ',
+      h('a', { attrs: { href: '#foo/234' }}, 'foo 234'),
+      ' | ',
+      h('a', { attrs: { href: '#bar' }}, 'bar'),
+      ' | ',
+      h('a', { attrs: { href: '#garbage' }}, 'garbage')
+    ])
+  }
+})
+</script>
