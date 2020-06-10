@@ -17,23 +17,29 @@
 </div>
 
 <script>
-  // 这样是不行的，因为没有 watcher，无法观察
+  // 基本上成了，好奇 mixin 的生命周期
   const validPlugin = {
     install (Vue) {
       Vue.mixin({
-        created () {
-          const validations = this.$options.validations
-          if (validations) {
-            const v = {}
-            v.valid = true
-            v.errors = []
-            Object.keys(validations).forEach(key => {
-              if (!validations[key].validate(this[key])) {
-                v.valid = false
-                v.errors.push(validations[key].message(key, this[key]))
+        computed: {
+          $v () {
+            let valid = true
+            let errors = []
+            let validations = this.$options.validations
+
+            if (!validations) { return { valid,  errors } }
+
+            Object.keys(validations).forEach(key =>{
+              let validate = validations[key].validate
+              let message = validations[key].message
+              let value = this[key]
+              if (!validate(value)) {
+                valid = false
+                errors.push(message(key, value))
               }
             })
-            this.$v = v
+
+            return { valid, errors }
           }
         }
       })

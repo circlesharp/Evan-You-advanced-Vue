@@ -8,8 +8,13 @@
 </div>
 
 <script>
+// 祖师爷说这里的难点在于 render
 const i18nPlugin = {
-  // Implement this!
+  install (Vue, locales) {
+    Vue.prototype.$t = function (id) {
+      return locales[this.$root.lang][id] // 因为是所有组件都去 i18n， 所以由 root level 决定
+    }
+  }
 }
 
 Vue.use(i18nPlugin, /* option */ {
